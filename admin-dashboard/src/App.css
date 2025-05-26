@@ -1,0 +1,12 @@
+.secondary-text {
+  @apply text-gray-600;
+}
+
+.black-btn {
+  height: 40px;
+  @apply bg-black text-white text-sm font-semibold px-5 rounded-lg flex items-center text-center hover:opacity-80 transition-all duration-300 justify-center;
+}
+
+.page-heading {
+  @apply text-lg font-medium;
+}
