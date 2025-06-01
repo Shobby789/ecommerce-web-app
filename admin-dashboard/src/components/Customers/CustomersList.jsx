@@ -1,36 +1,17 @@
-import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { BiSort } from "react-icons/bi";
-import { PRODUCTS } from "../../constants/products";
-import axios from "axios";
-import { BASE_URL } from "../../api/api";
 import Loader from "../Loaders/Loader";
+import useFetch from "../../hooks/useFetch";
+import { useState } from "react";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 
 const CustomersList = () => {
-  const [customers, setCustomers] = useState(null);
-  const LIMIT = 10;
-  const [isError, setIsError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const url = searchValue !== "" ? `/users/search?q=${searchValue}` : `/users`;
+  const { data, loading, error } = useFetch(url);
+   useDocumentTitle("Dashboard - Customers")
 
-  const fetchCustomers = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(`${BASE_URL}/users?limit=${LIMIT}`);
-      setCustomers(res?.data?.users);
-    } catch (error) {
-      console.log("err while fetching products >>>>", error);
-      setIsError(true);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    document.title = "Customers";
-    fetchCustomers();
-  }, []);
   return (
     <div className="w-full pb-10 bg-white rounded-lg border">
       <div className="w-full p-10 flex items-center justify-between">
@@ -40,6 +21,8 @@ const CustomersList = () => {
             <IoSearchOutline className="text-gray-500 text-xl" />
             <input
               type="text"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Search orders"
               className="w-full border-none outline-none text-sm secondary-text"
             />
@@ -49,9 +32,9 @@ const CustomersList = () => {
 
       {loading ? (
         <Loader />
-      ) : isError ? (
+      ) : error ? (
         <div className="flex justify-center">
-          <p>Something went wrong.</p>
+          <p>{error}</p>
         </div>
       ) : (
         <div className="relative overflow-x-auto">
@@ -88,8 +71,8 @@ const CustomersList = () => {
               </tr>
             </thead>
             <tbody className="">
-              {customers &&
-                customers?.map((product, i) => {
+              {data &&
+                data?.users?.map((product, i) => {
                   return (
                     <tr className="" key={i}>
                       <td

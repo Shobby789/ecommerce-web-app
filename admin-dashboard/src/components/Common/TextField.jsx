@@ -1,6 +1,6 @@
 import React from "react";
 
-const TextField = ({ labelTitle, inputType, value, name, onChange }) => {
+const TextField = ({ labelTitle, inputType, value, name, onChange, placeholder }) => {
   return (
     <div className="flex flex-col items-start gap-1 w-full">
       <label htmlFor={labelTitle} className="text-sm font-medium">
@@ -12,6 +12,7 @@ const TextField = ({ labelTitle, inputType, value, name, onChange }) => {
         id={labelTitle}
         value={value}
         onChange={onChange}
+        placeholder={placeholder}
         className="border w-full p-2.5 rounded-lg text-sm secondary-text outline-none"
       />
     </div>

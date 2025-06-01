@@ -1,37 +1,14 @@
-import { Link } from "react-router-dom";
-import React, { useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { BiSort } from "react-icons/bi";
-import { PRODUCTS } from "../../constants/products";
-import axios from "axios";
-import { BASE_URL } from "../../api/api";
 import Loader from "../Loaders/Loader";
+import useFetch from "../../hooks/useFetch";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 
 const ReviewsList = () => {
-  const [reviews, setReviews] = useState(null);
-  const LIMIT = 10;
-  const [isError, setIsError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { data, loading, error } = useFetch(`/comments`);
+  useDocumentTitle("Dashboard - Reviews");
 
-  const fetchReviews = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(`${BASE_URL}/comments?limit=${LIMIT}`);
-      setReviews(res?.data?.comments);
-      console.log(res?.data?.comments);
-    } catch (error) {
-      console.log("err while fetching products >>>>", error);
-      setIsError(true);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    document.title = "Reviews";
-    fetchReviews();
-  }, []);
   return (
     <div className="w-full pb-10 bg-white rounded-lg border">
       <div className="w-full p-10 flex items-center justify-between">
@@ -50,9 +27,9 @@ const ReviewsList = () => {
 
       {loading ? (
         <Loader />
-      ) : isError ? (
+      ) : error ? (
         <div className="flex justify-center">
-          <p>Something went wrong.</p>
+          <p>{error}</p>
         </div>
       ) : (
         <div className="relative overflow-x-auto">
@@ -83,133 +60,137 @@ const ReviewsList = () => {
               </tr>
             </thead>
             <tbody className="">
-              {reviews?.map((product, i) => {
-                return (
-                  <tr className="" key={i}>
-                    <td
-                      className={`px-10 ${
-                        i === 0 ? "pb-4 py-10" : " py-4"
-                      } secondary-text whitespace-nowrap text-sm flex items-center gap-8`}
-                    >
-                      <div className="w-[48px] h-[48px] bg-gray-100 flex items-center justify-center font-medium text-blue-500">
-                        <span>SM</span>
-                      </div>
-                      <span>{product?.user?.fullName}</span>
-                    </td>
-                    <td
-                      className={`px-10 ${
-                        i === 0 ? "pb-4 py-10" : " py-4"
-                      } secondary-text text-sm font-normal`}
-                    >
-                      {product?.body}
-                    </td>
-                    <td className={`px-14 ${i === 0 ? "pb-4 py-10" : " py-4"}`}>
-                      <button className="" type="button">
-                        <HiDotsHorizontal className="text-base text-gray-500" />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+              {data &&
+                data?.comments?.map((product, i) => {
+                  return (
+                    <tr className="" key={i}>
+                      <td
+                        className={`px-10 ${
+                          i === 0 ? "pb-4 py-10" : " py-4"
+                        } secondary-text whitespace-nowrap text-sm flex items-center gap-8`}
+                      >
+                        <div className="w-[48px] h-[48px] bg-gray-100 flex items-center justify-center font-medium text-blue-500">
+                          <span>SM</span>
+                        </div>
+                        <span>{product?.user?.fullName}</span>
+                      </td>
+                      <td
+                        className={`px-10 ${
+                          i === 0 ? "pb-4 py-10" : " py-4"
+                        } secondary-text text-sm font-normal`}
+                      >
+                        {product?.body}
+                      </td>
+                      <td
+                        className={`px-14 ${i === 0 ? "pb-4 py-10" : " py-4"}`}
+                      >
+                        <button className="" type="button">
+                          <HiDotsHorizontal className="text-base text-gray-500" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
-          {/* pagination */}
-          <nav
-            aria-label="Page navigation"
-            className="mt-16 flex justify-end px-10"
-          >
-            <ul class="flex items-center -space-x-px h-8 text-sm">
-              <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700"
-                >
-                  <span class="sr-only">Previous</span>
-                  <svg
-                    class="w-2.5 h-2.5 rtl:rotate-180"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 6 10"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M5 1 1 5l4 4"
-                    />
-                  </svg>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-gray-100 hover:bg-gray-100 hover:text-gray-700"
-                >
-                  1
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700"
-                >
-                  2
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  aria-current="page"
-                  class="z-10 flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700"
-                >
-                  3
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700"
-                >
-                  4
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700"
-                >
-                  5
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white rounded-e-lg hover:bg-gray-100 hover:text-gray-700"
-                >
-                  <span class="sr-only">Next</span>
-                  <svg
-                    class="w-2.5 h-2.5 rtl:rotate-180"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 6 10"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="m1 9 4-4-4-4"
-                    />
-                  </svg>
-                </a>
-              </li>
-            </ul>
-          </nav>
         </div>
       )}
+
+      {/* pagination */}
+      <nav
+        aria-label="Page navigation"
+        className="mt-10 flex justify-end px-10"
+      >
+        <ul class="flex items-center -space-x-px h-8 text-sm">
+          <li>
+            <a
+              href="#"
+              class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700"
+            >
+              <span class="sr-only">Previous</span>
+              <svg
+                class="w-2.5 h-2.5 rtl:rotate-180"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 6 10"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 1 1 5l4 4"
+                />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-gray-100 hover:bg-gray-100 hover:text-gray-700"
+            >
+              1
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700"
+            >
+              2
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              aria-current="page"
+              class="z-10 flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700"
+            >
+              3
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700"
+            >
+              4
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700"
+            >
+              5
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white rounded-e-lg hover:bg-gray-100 hover:text-gray-700"
+            >
+              <span class="sr-only">Next</span>
+              <svg
+                class="w-2.5 h-2.5 rtl:rotate-180"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 6 10"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m1 9 4-4-4-4"
+                />
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 };

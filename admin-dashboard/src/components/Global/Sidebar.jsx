@@ -1,22 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { SIDEBAR_LINKS } from "../../constants/SidebarLinks";
+import Logo from "./Logo";
 
 const Sidebar = () => {
   const { pathname } = useLocation();
   return (
-    <div className="w-full py-10 px-10 sticky inset-0">
-      <div className="w-full flex items-center justify-center gap-2">
-        <img
-          src={"/logo.svg"}
-          alt="logo"
-          width={16}
-          height={26}
-          className="object-contain"
-        />
-        <p className="text-[20px] font-extrabold">
-          <strong>Admin</strong>
-        </p>
-      </div>
+    <div className="w-full py-10 px-10 sticky inset-x-0 top-0">
+      <Logo/>
       <ul className="w-full mt-10 flex flex-col items-start gap-1">
         {SIDEBAR_LINKS?.map((l, i) => {
           return (
